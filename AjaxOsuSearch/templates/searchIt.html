@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>searchIt</title>
+    <style>
+
+        #d0{
+            background: #dcffcd;
+            width: 200px;
+        }
+    </style>
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/jquery-1.11.3.js"></script>
+    <script >
+        $(function () {
+            $("[name='uId']").blur(function () {
+                var xhr=getXhr();//获取xhr
+                var userid=this.value;
+                var url="/serverO?userid="+userid;
+                xhr.open('get',url,true);
+                //设置回调
+                xhr.onreadystatechange=function () {
+                    if(xhr.readyState==4&&xhr.status==200){
+                        $("#show").html(xhr.responseText)
+                    }
+                }
+                //4.发送请求
+                xhr.send(null);
+            })
+        })
+    </script>
+</head>
+<body>
+    <div id="d0">
+        <p>ID:<input type="text" name="uId"></p>
+        <div id="show"></div>
+    </div>
+
+</body>
+</html>
