@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 import Osu_clean,Osu_paqu
 import pymysql
@@ -9,6 +9,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root:234567@localhost:3306/OSUer'
 #自动提交
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN']=True
+#为session设置key
+app.config['SECRET_KEY'] = 'OnePageOfLifeInMyStory'
 db=SQLAlchemy(app)
 #创建Users类映射users表
 class Users(db.Model):
@@ -51,26 +53,26 @@ def registerO():
         db.session.add(user)
         #登陆成功自动重定向到登陆
         return redirect('/loginO')
-#登陆页面
+#登陆页面--------------------------------
 @app.route('/loginO',methods=['GET','POST'])
 def loginO():
     if request.method=="GET":
-        return render_template('loginIt.html')
+        return render_template('logIt.html')
     else:
         uname=request.form['uname']
         upwd=request.form['upwd']
-        try:
-            #查询从前端获取到uname的upwd
-            user=db.session.query(Users).filter_by(uname=uname).first()
-        except Exception as e:
-            #查询失败
-            return "查无此人！"
+        #查询从前端获取到uname的upwd
+        user=db.session.query(Users).filter_by(uname=uname,upwd=upwd).first()
+        if user:
+            #先将信息存储进session
+            session['id']=user.id
+            session['uname']=user.uname
+            #登陆成功后跳转到查询
+            return redirect('/searchO')
         else:
-            if user.upwd==upwd:
-                #登陆成功后跳转到查询
-                return redirect('/searchO')
-            else:
-                return "密码错误！"
+            errMsg="输入信息有误"
+            return render_template('logIt.html',errMsg=errMsg)
+
 #进入查询界面
 @app.route('/searchO',methods=['GET','POST'])
 def searchO():
@@ -78,7 +80,10 @@ def searchO():
     直接跳转到查询界面
     :return:
     '''
-    return render_template('searchIt.html')
+    #从session中获取登陆信息
+    if 'id' in session and 'uname' in session:
+        user=Users.query.filter_by(id=session.get('id')).first()
+    return render_template('searchIt.html',user=user)
 #服务器返回查询结果
 @app.route('/serverO')
 def serverO():

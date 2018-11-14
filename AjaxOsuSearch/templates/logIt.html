@@ -1,32 +1,22 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>登陆页面</title>
-    <style>
-
-    </style>
 </head>
 <body>
-    {if errMsg=="NameERR" %}
-        <script>
-            alert('用户名错误')
-        </script>
-    {% elif errMsg=="PwdERR" %}
-        <script>
-            alert('密码错误')
-        </script>
-
+    {% if errMsg %}
+        <script>alert('{{errMsg}}')</script>
+        <div>{{errMsg}}</div>
     {% endif %}
     <form action="/loginO" method="post">
         <table>
-            <tr><td align="center">登录页</td></tr>
             <tr>
-                <td>用户名:</td>
+                <td>registerName:</td>
                 <td><input type="text" name="uname"></td>
             </tr>
             <tr>
-                <td>密码:</td>
+                <td>password:</td>
                 <td><input type="password" name="upwd"></td>
             </tr>
             <tr>

@@ -10,4 +10,5 @@ def Get_OsuHtml(Osu_numbers):
         Osuhtml=response.text#爬取该ID的主页html
         return Osuhtml
     except:
+        print('失败')
         return "没东西"
